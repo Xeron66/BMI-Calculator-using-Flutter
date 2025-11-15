@@ -1,3 +1,4 @@
+import 'package:bmi_calculator/services/app_converter.dart';
 import 'package:bmi_calculator/widgets/app_input_field.dart';
 import 'package:flutter/material.dart';
 
@@ -24,36 +25,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   String _bmiResult = '';
   String? category;
 
-  double? cmToM() {
-    final cm = double.tryParse(_cm_heightController.text.trim());
-    if (cm == null || cm < 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Data')));
-      return null;
-    } else {
-      return cm / 100.0;
-    }
-  }
-
-  // this method converts feet to total inch
-  // then converts the inch to meter which is later on returned
-  double? feetInchToM () {
-    final feet = double.tryParse(_feet_heightController.text.trim());
-    final inch = double.tryParse(_inch_heightController.text.trim());
-
-    if (feet == null || feet < 0 || inch == null || inch < 0) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Data')));
-      return null;
-    } else {
-      final totalInch = (feet*12)+inch;
-
-      if (totalInch <= 0) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Data')));
-        return null;
-      }
-
-      return totalInch*0.0254;
-    }
-  }
 
   void _calculate() {
     final weight = double.tryParse(_weightController.text.trim());
@@ -63,7 +34,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       return null;
     }
 
-    final m = _heightType == HeightType.cm ? cmToM() : feetInchToM();
+    final m = _heightType == HeightType.cm ? AppServices.cmToM(_cm_heightController.text.trim()) : AppServices.feetInchToM(_feet_heightController.text.trim(), _inch_heightController.text.trim());
 
     if (m == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Data')));
@@ -71,26 +42,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     }
 
     final bmi = weight/(m*m);
-    final cat = categoryResult(bmi);
+    final cat = AppServices.categoryResult(bmi);
 
     setState(() {
       _bmiResult = bmi.toStringAsFixed(2);
       category = cat;
     });
-  }
-
-  String categoryResult (double bmi) {
-    if (bmi < 18.5) return 'Underweight';
-    if (bmi < 25) return 'Normal';
-    if (bmi < 35) return 'Overweight';
-    return 'Bbese';
-  }
-
-  Color categoryResultColor (double bmi) {
-    if (bmi < 18.5) return Colors.blue;
-    if (bmi < 25) return Colors.green;
-    if (bmi < 35) return Colors.amber;
-    return Colors.red;
   }
 
   @override
