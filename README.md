@@ -134,7 +134,7 @@ You must have the Flutter SDK installed on your machine.
 <!-- end list -->
 
 ```sh
-git clone [https://github.com/your-username/bmi_calculator.git](https://github.com/your-username/bmi_calculator.git)
+git clone https://github.com/Xeron66/BMI-Calculator-using-Flutter.git
 ```
 
 2.  **Navigate to the project directory**
@@ -142,7 +142,7 @@ git clone [https://github.com/your-username/bmi_calculator.git](https://github.c
 <!-- end list -->
 
 ```sh
-cd bmi_calculator
+cd BMI-Calculator-using-Flutter
 ```
 
 3.  **Install dependencies**
