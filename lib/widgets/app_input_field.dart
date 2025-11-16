@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppInputField extends StatelessWidget {
 
@@ -18,6 +19,8 @@ class AppInputField extends StatelessWidget {
     return TextField(
       controller: controller,            // dyn. var.
       keyboardType: textInputType,       // dyn. var.
+      // Filtering here!.5
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
     
       decoration: InputDecoration(
         hintText: labelText,             // dyn. var.

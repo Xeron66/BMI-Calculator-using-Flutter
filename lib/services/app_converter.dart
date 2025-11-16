@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 
 class AppServices {
 
+  static double? lbToKg (String lb) {
+    final kg = double.tryParse(lb);
+
+    if (kg == null || kg <=0 ){
+      return null;
+    } else {
+      return kg * 0.453;
+    }
+  }
+
   static double? cmToM(String cmData) {
     final cm = double.tryParse(cmData);
     if (cm == null || cm < 0) {
@@ -34,17 +44,18 @@ class AppServices {
     }
   }
 
+  // According to the requirements
   static String categoryResult (double bmi) {
     if (bmi < 18.5) return 'Underweight';
-    if (bmi < 25) return 'Normal';
-    if (bmi < 35) return 'Overweight';
+    if (bmi < 24.9) return 'Normal';
+    if (bmi < 30) return 'Overweight';
     return 'Obese';
   }
 
   static Color categoryResultColor (double bmi) {
     if (bmi < 18.5) return Colors.blue;
-    if (bmi < 25) return Colors.green;
-    if (bmi < 35) return Colors.amber;
+    if (bmi < 24.9) return Colors.green;
+    if (bmi < 30) return Colors.orange;
     return Colors.red;
   }
 }

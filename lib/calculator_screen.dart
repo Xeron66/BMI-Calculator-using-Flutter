@@ -1,10 +1,12 @@
 import 'package:bmi_calculator/services/app_converter.dart';
 import 'package:bmi_calculator/widgets/app_input_field.dart';
+import 'package:bmi_calculator/widgets/bmi_result.dart';
 import 'package:flutter/material.dart';
 
 // enum set to choose a height type
 // and to be able to switch between them
 enum HeightType { cm, feetInch }
+enum WeightType {kg, lb}
 
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
@@ -15,19 +17,22 @@ class CalculatorScreen extends StatefulWidget {
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   HeightType? _heightType = HeightType.cm;
+  WeightType? _weightType = WeightType.kg;
 
   // Controllers
-  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _kg_weightController = TextEditingController();
+  final TextEditingController _lb_weightController = TextEditingController();
   final TextEditingController _cm_heightController = TextEditingController();  
   final TextEditingController _feet_heightController = TextEditingController();
   final TextEditingController _inch_heightController = TextEditingController();
 
   String _bmiResult = '';
   String? category;
+  Color? categoryColor;
 
 
   void _calculate() {
-    final weight = double.tryParse(_weightController.text.trim());
+    final weight = _weightType == WeightType.kg ? double.tryParse(_kg_weightController.text.trim()) : AppServices.lbToKg(_lb_weightController.text.trim());
 
     if (weight == null || weight <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid Data')));
@@ -43,10 +48,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
     final bmi = weight/(m*m);
     final cat = AppServices.categoryResult(bmi);
+    final catColor = AppServices.categoryResultColor(bmi);
 
     setState(() {
-      _bmiResult = bmi.toStringAsFixed(2);
+      _bmiResult = bmi.toStringAsFixed(1);
       category = cat;
+      categoryColor = catColor;
     });
   }
 
@@ -57,14 +64,47 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          Text('Weight'),
-          AppInputField(
-            labelText: 'Enter weight (in Kg)',
-            controller: _weightController,
-            textInputType: TextInputType.number,
+
+          Text('Select Weight Type'),
+          SegmentedButton<WeightType>(
+            segments: [
+              ButtonSegment<WeightType>(
+                label: Text('Kg'),
+                value: WeightType.kg,
+              ),
+
+              ButtonSegment<WeightType>(
+                label: Text('Lb'),
+                value: WeightType.lb,
+              ),
+            ],
+            selected: {_weightType!},
+            onSelectionChanged: (value) {
+              setState(() {
+                _weightType = value.first;
+              });
+            },
           ),
 
+          SizedBox(height: 16,),
+
+          Text('Weight'),
+          if (_weightType == WeightType.kg)...[
+            AppInputField(
+              labelText: 'Enter weight (in Kg)',
+              controller: _kg_weightController,
+              textInputType: TextInputType.number,
+            ),
+          ] else ... [
+            AppInputField(
+              labelText: 'Enter weight (in Lb)',
+              controller: _lb_weightController,
+              textInputType: TextInputType.number,
+            ),
+          ],
+
           const SizedBox(height: 8),
+
           Text('Select Height Type'),
           SegmentedButton<HeightType>(
             segments: [
@@ -80,9 +120,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ],
             selected: {_heightType!},
             onSelectionChanged: (value) {
-              setState(() {
-                _heightType = value.first;
-              });
+              
             },
           ),
 
@@ -130,12 +168,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ),
 
           const SizedBox(height: 16,),
-
-          Text('BMI Result $_bmiResult'),
-
-          const SizedBox(height: 16,),
-
-          if (category != null) Text('Category Result $category'),  
+          Center(child: Text('--- Result ---'),),
+          BmiResult(
+            categoryColor: categoryColor, 
+            bmiResult: _bmiResult, 
+            category: category
+          )
 
         ],
       ),
