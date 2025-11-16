@@ -104,7 +104,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ],
 
           const SizedBox(height: 8),
-
           Text('Select Height Type'),
           SegmentedButton<HeightType>(
             segments: [
@@ -120,7 +119,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ],
             selected: {_heightType!},
             onSelectionChanged: (value) {
-              
+              setState(() {
+                _heightType = value.first;
+              });
             },
           ),
 
@@ -161,14 +162,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ],
 
           const SizedBox(height: 16,),
-
+          Center(child: Text('--- Result ---'),),
           ElevatedButton(
             onPressed: _calculate,
             child: Text('Calculate')
           ),
 
           const SizedBox(height: 16,),
-          Center(child: Text('--- Result ---'),),
+          
           BmiResult(
             categoryColor: categoryColor, 
             bmiResult: _bmiResult, 
